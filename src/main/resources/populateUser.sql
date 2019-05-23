@@ -1,0 +1,4 @@
+INSERT INTO `bank-app`.`user` (`id`, `created_time`, `password`, `updated_time`, `username`) VALUES ('1', '2019-04-27', 'bogdanel', '2019-04-27', 'bogdan');
+INSERT INTO `bank-app`.`user` (`id`, `created_time`, `password`, `updated_time`, `username`) VALUES ('2', '2019-04-27', 'Alina1', '2019-04-27', 'iosif');
+INSERT INTO `bank-app`.`user` (`id`, `created_time`, `password`, `updated_time`, `username`) VALUES ('3', '2019-04-29', 'testPas', '2019-04-29', 'Ioan1');
+INSERT INTO `bank-app`.`user` (`id`, `created_time`, `password`, `updated_time`, `username`) VALUES ('4', '2019-05-01', 'myPass', '2019-05-01', 'alexP92');
