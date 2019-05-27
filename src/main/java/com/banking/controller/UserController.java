@@ -18,7 +18,8 @@ import com.banking.service.UserService;
 
 import java.util.List;
 
-@RestController("/user")
+@RestController
+@RequestMapping("user")
 public class UserController {
 
     @Autowired
@@ -27,13 +28,14 @@ public class UserController {
     @Autowired
     UserConverter userConverter;
 
-    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDTO getUser(@PathVariable(value = "id") Long id) {
+    @GetMapping("/{id}")
+    public UserDTO getUser(@PathVariable(value = "id") Long id)
+    {
         return userConverter.convertToUserDTO(userService.findById(id));
     }
 
-    @GetMapping("/get-all")
-    public List<User> findAll(){
+    @GetMapping(path = "/get-all", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<User> getAll(){
         return userService.findAll();
     }
 
