@@ -8,9 +8,16 @@ public final class TokenGeneratorUtils {
     private TokenGeneratorUtils(){};
 
     public static final String generateToken(){
-        byte[] array = new byte[20];
-        new Random().nextBytes(array);
-        String generatedToken = new String(array, Charset.forName("UTF-8"));
-        return generatedToken;
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456789" + "abcdefghijklmnopqrstuvxyz";
+        StringBuilder generatedToken = new StringBuilder(20);
+        for (int i = 0; i < 20; i++) {
+
+            // generate a random number between 0 to AlphaNumericString variable length
+            int index = (int)(AlphaNumericString.length() * Math.random());
+
+            // add Character one by one in end of generatedToken
+            generatedToken.append(AlphaNumericString.charAt(index));
+        }
+        return generatedToken.toString();
     }
 }

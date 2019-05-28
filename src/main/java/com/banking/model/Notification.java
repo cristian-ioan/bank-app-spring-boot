@@ -21,6 +21,8 @@ public class Notification extends IdModel {
     @Column(name = "sent_time", length = 8)
     private LocalDateTime sentTime;
 
+    public Notification(){}
+
     public Notification(User user, String details, LocalDateTime createdTime, LocalDateTime sentTime){
         this.user = user;
         this.details = details;

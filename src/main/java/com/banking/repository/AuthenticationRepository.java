@@ -5,5 +5,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AuthenticationRepository extends GenericRepository<Authentication> {
-    String findAuthenticationByToken(String token);
+    Authentication findAuthenticationByToken(String token);
+    Authentication findAuthenticationById(Long id);
 }

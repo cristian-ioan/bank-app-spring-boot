@@ -1,12 +1,10 @@
 package com.banking.service;
 
-import com.banking.exception.BalanceException;
-import com.banking.exception.DetailsAccountException;
+import com.banking.exception.WrongTokenException;
 import com.banking.exception.WrongUserNamePasswordException;
 import com.banking.model.User;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +17,8 @@ public interface UserService {
     void deleteUserById(long id);
     void deleteUser(User user);
 
-    void loginUser(String username, String password);
+    String loginUser(String username, String password) throws WrongUserNamePasswordException;
+    String logoutUser(String token) throws WrongTokenException;
     User findUserByUserNameAndPassword(String username, String password);
     Optional<User> verifyUserPassword(String username, String password);
 }

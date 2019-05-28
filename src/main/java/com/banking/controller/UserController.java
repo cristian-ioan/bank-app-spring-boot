@@ -1,15 +1,17 @@
 package com.banking.controller;
 
+import com.banking.exception.WrongTokenException;
+import com.banking.exception.WrongUserNamePasswordException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.banking.dto.UserDTO;
 import com.banking.dto.converter.UserConverter;
 import com.banking.model.User;
 import com.banking.service.UserService;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -34,40 +36,26 @@ public class UserController {
         return userService.findAll();
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO createUser(@RequestBody User user) {
-        return userConverter.convertToUserDTO(userService.createUser(user));
-    }
-
-    @PutMapping
-    public ResponseEntity<UserDTO> updateUser(@RequestBody User user) {
-
-        User updatedUser = userService.updateUser(user);
-        if (updatedUser != null) {
-            return new ResponseEntity<>(userConverter.convertToUserDTO(userService.updateUser(updatedUser)),
-                    HttpStatus.OK);
+    @PostMapping("/loginUser/{username}/&/{password}")
+    @ResponseBody
+    public String loginUser(@PathVariable("username") String username,
+                                    @PathVariable("password") String password) {
+        try{
+            return userService.loginUser(username, password);
+        } catch (WrongUserNamePasswordException ex){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!!!", ex);
         }
-
-        return ResponseEntity.badRequest().build();
     }
 
-    @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@RequestParam Long id) {
-        userService.deleteUserById(id);
+    @PostMapping("/logout/{token}")
+    @ResponseBody
+    public String logoutUser(@PathVariable("token") String token){
+        try {
+            return userService.logoutUser(token);
+        } catch (WrongTokenException ex){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not found!!!", ex);
+        }
     }
 
-    @GetMapping("/error")
-    public UserDTO getError() throws Exception {
-        throw new Exception();
-    }
-
-    @PutMapping("/loginUser/{username}&{password}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void loginUser(@PathVariable(value = "username") String username,
-                          @PathVariable(value = "password") String password) {
-        userService.loginUser(username, password);
-    }
 
 }

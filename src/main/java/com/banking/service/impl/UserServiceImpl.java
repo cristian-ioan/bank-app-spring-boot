@@ -1,36 +1,32 @@
 package com.banking.service.impl;
 
-import com.banking.exception.BalanceException;
-import com.banking.exception.DetailsAccountException;
+import com.banking.exception.WrongTokenException;
 import com.banking.exception.WrongUserNamePasswordException;
 import com.banking.model.Authentication;
 import com.banking.model.User;
+import com.banking.repository.AuthenticationRepository;
 import com.banking.repository.UserRepository;
 import com.banking.service.UserService;
 import com.banking.util.TokenGeneratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 @Service("userService")
 @Transactional(readOnly = true, rollbackFor = Exception.class)
 public class UserServiceImpl implements UserService {
 
-    private User user;
-    private Optional<User> resultOfUserVerification;
-    private IOService ioService = IOService.getInstance();
-
-    private final static Logger LOG = Logger.getLogger(Logger.class.getName());
-
     @Autowired
     private UserRepository userRepository;
 
-    private AuthenticationServiceImpl authenticationServiceImpl;
+    @Autowired
+    private AuthenticationRepository authenticationRepository;
 
     @Override
     public User findById(Long id) {
@@ -67,18 +63,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void loginUser(String username, String password) {
+    public String loginUser(String username, String password) throws WrongUserNamePasswordException {
         Optional<User> verifyUser = verifyUserPassword(username, password);
-        if (verifyUser.isPresent()){
-            String generateToken = TokenGeneratorUtils.generateToken();
-            LocalDateTime creationTime = LocalDateTime.now();
-            authenticationServiceImpl.createAuthentication(new Authentication(generateToken, verifyUser.get(), creationTime));
+        if (!verifyUser.isPresent()){
+            throw new WrongUserNamePasswordException("User not found in the database!");
         }
-    }
-
-    @Override
-    public User findUserByUserNameAndPassword(String username, String password){
-        return userRepository.findUserByUserNameAndPassword(username, password);
+        String generateToken = TokenGeneratorUtils.generateToken();
+        Authentication getAuthenticationByToken = authenticationRepository.findAuthenticationByToken(generateToken);
+        LocalDateTime creationTime = LocalDateTime.now();
+        if (getAuthenticationByToken != null){
+            String newGenerateToken = TokenGeneratorUtils.generateToken();
+            LocalDateTime newCreationTime = LocalDateTime.now();
+            authenticationRepository.save(new Authentication(newGenerateToken, verifyUser.get(), newCreationTime));
+            return newGenerateToken;
+        }
+        authenticationRepository.save(new Authentication(generateToken, verifyUser.get(), creationTime));
+        return generateToken;
     }
 
     @Override
@@ -89,5 +89,23 @@ public class UserServiceImpl implements UserService {
         }
         return Optional.empty();
     }
+
+    @Override
+    public User findUserByUserNameAndPassword(String username, String password){
+        return userRepository.findUserByUserNameAndPassword(username, password);
+    }
+
+    @Override
+    @Transactional
+    public String logoutUser(String token) throws WrongTokenException {
+        Authentication getAuthenticationByToken = authenticationRepository.findAuthenticationByToken(token);
+        if (getAuthenticationByToken != null){
+            authenticationRepository.delete(getAuthenticationByToken);
+            throw new ResponseStatusException(HttpStatus.OK, "Token deleted!");
+        } else {
+            throw new WrongTokenException("Wrong token!");
+        }
+    }
+
 
 }

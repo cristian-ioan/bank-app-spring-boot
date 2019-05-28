@@ -18,6 +18,8 @@ public class Authentication extends IdModel {
     @Column(name = "creation_time")
     private LocalDateTime creationTime;
 
+    public Authentication(){}
+
     public Authentication(String token, User user, LocalDateTime creationTime){
         this.token = token;
         this.user = user;

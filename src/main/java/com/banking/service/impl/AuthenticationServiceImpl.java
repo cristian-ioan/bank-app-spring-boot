@@ -33,7 +33,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public String findAuthenticationByToken(String token) {
+    public Authentication findAuthenticationByToken(String token) {
         return authenticationRepository.findAuthenticationByToken(token);
+    }
+
+    @Override
+    public Authentication findAuthenticationById(Long id) {
+        return authenticationRepository.findAuthenticationById(id);
     }
 }

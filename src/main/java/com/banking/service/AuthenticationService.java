@@ -6,7 +6,8 @@ import org.springframework.stereotype.Service;
 @Service
 public interface AuthenticationService {
 
-    String findAuthenticationByToken(String token);
+    Authentication findAuthenticationByToken(String token);
+    Authentication findAuthenticationById(Long id);
     Authentication createAuthentication(Authentication authentication);
     Authentication updateAuthentication(Authentication authentication);
     void deleteAuthentication(Authentication authentication);
