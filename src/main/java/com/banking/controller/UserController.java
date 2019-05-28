@@ -1,10 +1,5 @@
 package com.banking.controller;
 
-import javax.websocket.server.PathParam;
-import javax.xml.ws.WebServiceException;
-
-import com.banking.exception.WrongUserNamePasswordException;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

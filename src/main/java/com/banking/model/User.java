@@ -28,6 +28,8 @@ public class User extends IdModel {
     @Column(name = "updated_time", length = 8)
     private LocalDateTime updatedTime;
 
+    public User(){}
+
     public User(String userName, String password) {
         super();
         this.userName = userName;
