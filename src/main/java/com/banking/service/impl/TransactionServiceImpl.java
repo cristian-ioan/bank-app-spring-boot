@@ -67,16 +67,16 @@ public class TransactionServiceImpl implements TransactionService {
         User user = authentication.getUser();
         List<Account> accountList = accountRepository.findAccountsByUserId(user.getId());
         List<Transaction> accountTransactionsList = transactionRepository.findAll();
-        List<TransactionDTO> accountsDTOList = new ArrayList<>();
+        List<TransactionDTO> transactionsDTOList = new ArrayList<>();
         for (Transaction transaction : accountTransactionsList){
             for (Account account : accountList){
                 if (transaction.getAccount().equals(account)){
-                    accountsDTOList.add(new TransactionDTO(transaction.getAccountNumber(),
+                    transactionsDTOList.add(new TransactionDTO(transaction.getAccountNumber(),
                             transaction.getAmount(), transaction.getDetail(), transaction.getCreatedTime(),
                             transaction.getFieldType()));
                 }
             }
         }
-        return accountsDTOList;
+        return transactionsDTOList;
     }
 }
