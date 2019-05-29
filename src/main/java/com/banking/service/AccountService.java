@@ -19,8 +19,7 @@ public interface AccountService {
     Account updateAccount(Account account);
     void deleteAccount(Account account);
 
-    List<Account>findAccountsByUser(User user);
-    List<Account> findAllById(long id);
+    List<Account> findAccountsByUserId(long id);
 
     void createUserBankAccount(User user)  throws BalanceException;
     void verifyPayment(List<Account> accounts) throws DetailsAccountException;

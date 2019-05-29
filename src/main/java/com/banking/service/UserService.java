@@ -1,5 +1,6 @@
 package com.banking.service;
 
+import com.banking.dto.UserDTO;
 import com.banking.exception.WrongTokenException;
 import com.banking.exception.WrongUserNamePasswordException;
 import com.banking.model.User;
@@ -17,6 +18,7 @@ public interface UserService {
     void deleteUserById(long id);
     void deleteUser(User user);
 
+    List<UserDTO> convertToUsersListDTO();
     String loginUser(String username, String password) throws WrongUserNamePasswordException;
     String logoutUser(String token) throws WrongTokenException;
     User findUserByUserNameAndPassword(String username, String password);

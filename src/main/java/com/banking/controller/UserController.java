@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.banking.dto.UserDTO;
 import com.banking.dto.converter.UserConverter;
-import com.banking.model.User;
 import com.banking.service.UserService;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,8 +31,8 @@ public class UserController {
     }
 
     @GetMapping(path = "/get-all", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<User> getAll(){
-        return userService.findAll();
+    public List<UserDTO> getAll(){
+        return userService.convertToUsersListDTO();
     }
 
     @PostMapping("/loginUser/{username}/&/{password}")
@@ -47,7 +46,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/logout/{token}")
+    @DeleteMapping("/logout/{token}")
     @ResponseBody
     public String logoutUser(@PathVariable("token") String token){
         try {

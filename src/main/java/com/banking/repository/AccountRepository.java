@@ -8,8 +8,5 @@ import java.util.List;
 
 @Repository
 public interface AccountRepository extends GenericRepository<Account> {
-
-    List<Account> findAccountsByUser(User user);
-    List<Account> findAllById(long id);
-
+    List<Account> findAccountsByUserId(long id);
 }

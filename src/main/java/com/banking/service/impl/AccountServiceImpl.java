@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -41,14 +42,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> findAccountsByUser(User user){
-        return accountRepository.findAccountsByUser(user);
+    public List<Account> findAccountsByUserId(long id){
+        return accountRepository.findAccountsByUserId(id);
     }
-
-    @Override
-    public List<Account> findAllById(long id){
-        return accountRepository.findAllById(id);
-    };
 
     @Override
     @Transactional

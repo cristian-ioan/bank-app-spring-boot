@@ -1,5 +1,6 @@
 package com.banking.service.impl;
 
+import com.banking.dto.UserDTO;
 import com.banking.exception.WrongTokenException;
 import com.banking.exception.WrongUserNamePasswordException;
 import com.banking.model.Authentication;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,6 +64,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserDTO> convertToUsersListDTO() {
+        List<UserDTO> userDTOList = new ArrayList<>();
+        List<User> userList = userRepository.findAll();
+        for (User user: userList) {
+            userDTOList.add(new UserDTO(user.getId(), user.getUserName(), user.getCreatedTime(), user.getUpdatedTime()));
+        }
+        return userDTOList;
+    }
+
+    @Override
     @Transactional
     public String loginUser(String username, String password) throws WrongUserNamePasswordException {
         Optional<User> verifyUser = verifyUserPassword(username, password);
@@ -106,6 +118,5 @@ public class UserServiceImpl implements UserService {
             throw new WrongTokenException("Wrong token!");
         }
     }
-
 
 }

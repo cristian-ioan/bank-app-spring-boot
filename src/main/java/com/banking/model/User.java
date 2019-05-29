@@ -1,5 +1,7 @@
 package com.banking.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,6 +36,14 @@ public class User extends IdModel {
         super();
         this.userName = userName;
         this.password = password;
+    }
+
+    public User(String userName, String password, LocalDateTime createdTime, LocalDateTime updatedTime){
+        super();
+        this.userName = userName;
+        this.password = password;
+        this.createdTime = createdTime;
+        this.updatedTime = updatedTime;
     }
 
     public List<Account> getAccounts() {
@@ -101,18 +111,6 @@ public class User extends IdModel {
     @Override
     public int hashCode() {
         return Objects.hash(getAccounts(), getNotifications(), getUserName(), getPassword(), getCreatedTime(), getUpdatedTime());
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "accounts=" + accounts +
-                ", notifications=" + notifications +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                ", createdTime=" + createdTime +
-                ", updatedTime=" + updatedTime +
-                '}';
     }
 
 }

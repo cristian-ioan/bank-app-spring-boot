@@ -120,17 +120,4 @@ public class Account extends IdModel {
         return Objects.hash(getUser(), getTransactions(), getAccount_Number(), getAccount_Type(), getBalance(), getCreatedTime(), getUpdatedTime());
     }
 
-    @Override
-    public String toString() {
-        return "Account{" +
-                "user=" + user +
-                ", transactions=" + transactions +
-                ", account_Number='" + account_Number + '\'' +
-                ", account_Type='" + account_Type + '\'' +
-                ", balance=" + balance +
-                ", createdTime=" + createdTime +
-                ", updatedTime=" + updatedTime +
-                '}';
-    }
-
 }
