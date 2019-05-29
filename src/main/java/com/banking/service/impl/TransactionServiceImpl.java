@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +83,51 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public TransactionDTO transferMoneyByToken(String token, Transaction transaction) {
-        return null;
+    public List<TransactionDTO> transferMoneyByToken(String token, BigDecimal amount, String fromAccount,
+                                               String toAccount, Transaction transaction) throws WrongTokenException {
+        Authentication authentication = authenticationRepository.findAuthenticationByToken(token);
+
+        if (authentication == null){
+            throw new WrongTokenException("Wrong token!");
+        }
+        User user = authentication.getUser();
+        List<Account> accountList = accountRepository.findAccountsByUserId(user.getId());
+        List<TransactionDTO> transactionsDTOList = new ArrayList<>();
+        for(Account account : accountList){
+            if (account.getAccount_Number().equals(fromAccount)){
+                LocalDateTime createdTime = LocalDateTime.now();
+                BigDecimal newBalanceOfFirstAccount = account.getBalance().subtract(amount);
+                account.setBalance(newBalanceOfFirstAccount);
+                transaction.setAccountNumber(fromAccount);
+                transaction.setAmount(amount);
+                transaction.setCreatedTime(createdTime);
+                transaction.setFieldType("OUTGOING");
+                transaction.setAccount(account);
+                transactionRepository.save(transaction);
+                accountRepository.save(account);
+                transactionsDTOList.add(new TransactionDTO(transaction.getAccountNumber(),
+                        transaction.getAmount(), transaction.getDetail(), transaction.getCreatedTime(),
+                        transaction.getFieldType()));
+            }
+        }
+//        for(Account account : accountList){
+//            if (account.getAccount_Number().equals(toAccount)){
+//                LocalDateTime createdTime = LocalDateTime.now();
+//                BigDecimal newBalanceOfSecondAccount = account.getBalance().add(amount);
+//                account.setBalance(newBalanceOfSecondAccount);
+//                transaction.setAccountNumber(toAccount);
+//                transaction.setAmount(amount);
+//                transaction.setCreatedTime(createdTime);
+//                transaction.setFieldType("INCOMING");
+//                transaction.setAccount(account);
+//                transactionRepository.save(transaction);
+//                accountRepository.save(account);
+//                transactionsDTOList.add(new TransactionDTO(transaction.getAccountNumber(),
+//                        transaction.getAmount(), transaction.getDetail(), transaction.getCreatedTime(),
+//                        transaction.getFieldType()));
+//            }
+//        }
+        return transactionsDTOList;
     }
+
 }

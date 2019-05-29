@@ -81,15 +81,4 @@ public class Person extends IdModel {
         return Objects.hash(getUser(), getAddress(), getFirstName(), getLastName(), getEmail());
     }
 
-    @Override
-    public String toString() {
-        return "Person{" +
-                "user=" + user +
-                ", address='" + address + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
-
 }

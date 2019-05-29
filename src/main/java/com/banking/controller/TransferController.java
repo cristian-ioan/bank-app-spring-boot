@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -29,11 +30,16 @@ public class TransferController {
         }
     }
 
-    @PostMapping(path = "/transfer/{token}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/payment/{token}/{amount}/{fromAccount}/{toAccount}",
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public TransactionDTO transferMoneyByToken(@PathVariable("token") String token, @RequestBody Transaction transaction) {
+    public List<TransactionDTO> transferMoneyByToken(@PathVariable("token") String token,
+                                               @PathVariable("amount") BigDecimal amount,
+                                               @PathVariable("fromAccount") String fromAccount,
+                                               @PathVariable("toAccount") String toAccount,
+                                               @RequestBody Transaction transaction) {
         try{
-            return transactionService.transferMoneyByToken(token, transaction);
+            return transactionService.transferMoneyByToken(token, amount, fromAccount, toAccount, transaction);
         } catch (WrongTokenException ex){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not found!!!", ex);
         }

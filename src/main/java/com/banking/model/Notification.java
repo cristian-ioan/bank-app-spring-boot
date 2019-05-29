@@ -79,13 +79,4 @@ public class Notification extends IdModel {
         return Objects.hash(getUser(), getDetails(), getCreatedTime(), getSentTime());
     }
 
-    @Override
-    public String toString() {
-        return "Notification{" +
-                "user=" + user +
-                ", details='" + details + '\'' +
-                ", createdTime=" + createdTime +
-                ", sentTime=" + sentTime +
-                '}';
-    }
 }

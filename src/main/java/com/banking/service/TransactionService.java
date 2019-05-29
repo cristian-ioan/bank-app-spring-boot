@@ -5,6 +5,7 @@ import com.banking.exception.WrongTokenException;
 import com.banking.model.Transaction;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -18,5 +19,6 @@ public interface TransactionService {
 
     List<TransactionDTO> getTransactionsByToken(String token) throws WrongTokenException;
 
-    TransactionDTO transferMoneyByToken(String token, Transaction transaction) throws WrongTokenException;
+    List<TransactionDTO> transferMoneyByToken(String token, BigDecimal amount, String fromAccount, String toAccount,
+                                        Transaction transaction) throws WrongTokenException;
 }

@@ -107,16 +107,4 @@ public class Transaction extends IdModel {
         return Objects.hash(getAccountNumber(), getAmount(), getDetail(), getCreatedTime(), getFieldType(), getAccount());
     }
 
-    @Override
-    public String toString() {
-        return "Transaction{" +
-                "accountNumber='" + accountNumber + '\'' +
-                ", amount=" + amount +
-                ", detail='" + detail + '\'' +
-                ", createdTime=" + createdTime +
-                ", fieldType='" + fieldType + '\'' +
-                ", account=" + account +
-                '}';
-    }
-
 }
