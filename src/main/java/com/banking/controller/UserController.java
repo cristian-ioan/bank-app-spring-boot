@@ -24,7 +24,7 @@ public class UserController {
     @Autowired
     UserConverter userConverter;
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public UserDTO getUser(@PathVariable(value = "id") Long id)
     {
         return userConverter.convertToUserDTO(userService.findById(id));

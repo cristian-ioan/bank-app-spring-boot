@@ -113,6 +113,7 @@ public class UserServiceImpl implements UserService {
         Authentication getAuthenticationByToken = authenticationRepository.findAuthenticationByToken(token);
         if (getAuthenticationByToken != null){
             authenticationRepository.delete(getAuthenticationByToken);
+            authenticationRepository.flush();
             throw new ResponseStatusException(HttpStatus.OK, "Token deleted!");
         } else {
             throw new WrongTokenException("Wrong token!");

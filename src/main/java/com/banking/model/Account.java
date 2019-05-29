@@ -1,6 +1,9 @@
 package com.banking.model;
 
+import com.banking.validation.CurrencyType;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +23,8 @@ public class Account extends IdModel {
     @Column(name="account_number", length = 50)
     private String account_Number;
 
+    @CurrencyType
+    @NotEmpty(message = "Please provide another currency type!")
     @Column(name="account_type", length = 50)
     private String account_Type;
 

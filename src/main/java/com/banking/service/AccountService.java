@@ -23,7 +23,6 @@ public interface AccountService {
 
     List<Account> findAccountsByUserId(long id);
 
-    void createUserBankAccount(User user) throws BalanceException;
     void verifyPayment(List<Account> accounts) throws DetailsAccountException;
     void makeTransfer(List<Account> accounts, int optionFrom,long indexOfFirstAccount, String currencyFirstAccount,
                       int numberUserAccounts);
@@ -33,4 +32,5 @@ public interface AccountService {
                                         Notification notification);
 
     List<AccountDTO> getAccountsByToken(String token) throws WrongTokenException;
+    AccountDTO createAccountByToken(String token, Account account) throws WrongTokenException, BalanceException;
 }
