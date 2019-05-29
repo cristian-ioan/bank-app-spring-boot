@@ -1,12 +1,20 @@
 package com.banking.service.impl;
 
+import com.banking.dto.TransactionDTO;
+import com.banking.exception.WrongTokenException;
+import com.banking.model.Account;
+import com.banking.model.Authentication;
 import com.banking.model.Transaction;
+import com.banking.model.User;
+import com.banking.repository.AccountRepository;
+import com.banking.repository.AuthenticationRepository;
 import com.banking.repository.TransactionRepository;
 import com.banking.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service("transactionService")
@@ -15,6 +23,12 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private AuthenticationRepository authenticationRepository;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Override
     public Transaction findById(Long id) {
@@ -42,5 +56,27 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional
     public void deleteTransaction(Transaction transaction) {
         transactionRepository.delete(transaction);
+    }
+
+    @Override
+    public List<TransactionDTO> getTransactionsByToken(String token) throws WrongTokenException {
+        Authentication authentication = authenticationRepository.findAuthenticationByToken(token);
+        if (authentication == null){
+            throw new WrongTokenException("Wrong token!");
+        }
+        User user = authentication.getUser();
+        List<Account> accountList = accountRepository.findAccountsByUserId(user.getId());
+        List<Transaction> accountTransactionsList = transactionRepository.findAll();
+        List<TransactionDTO> accountsDTOList = new ArrayList<>();
+        for (Transaction transaction : accountTransactionsList){
+            for (Account account : accountList){
+                if (transaction.getAccount().equals(account)){
+                    accountsDTOList.add(new TransactionDTO(transaction.getAccountNumber(),
+                            transaction.getAmount(), transaction.getDetail(), transaction.getCreatedTime(),
+                            transaction.getFieldType()));
+                }
+            }
+        }
+        return accountsDTOList;
     }
 }

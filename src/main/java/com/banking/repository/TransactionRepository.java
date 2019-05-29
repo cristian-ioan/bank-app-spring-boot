@@ -4,9 +4,11 @@ import com.banking.model.Account;
 import com.banking.model.Transaction;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.TabableView;
 import java.util.List;
 
 @Repository
 public interface TransactionRepository extends GenericRepository<Transaction> {
     List<Transaction> findTransactionsByAccount(Account account);
+    List<Account> findTransactionsByAccount_Id(long id);
 }

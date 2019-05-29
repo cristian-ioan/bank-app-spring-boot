@@ -1,5 +1,7 @@
 package com.banking.service;
 
+import com.banking.dto.TransactionDTO;
+import com.banking.exception.WrongTokenException;
 import com.banking.model.Transaction;
 import org.springframework.stereotype.Service;
 
@@ -14,4 +16,5 @@ public interface TransactionService {
     Transaction updateTransaction(Transaction transaction);
     void deleteTransaction(Transaction transaction);
 
+    List<TransactionDTO> getTransactionsByToken(String token) throws WrongTokenException;
 }
