@@ -1,13 +1,11 @@
 package com.banking.service;
 
 import com.banking.dto.AccountDTO;
-import com.banking.exception.BalanceException;
 import com.banking.exception.DetailsAccountException;
 import com.banking.exception.WrongTokenException;
 import com.banking.model.Account;
 import com.banking.model.Notification;
 import com.banking.model.Transaction;
-import com.banking.model.User;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,7 +20,6 @@ public interface AccountService {
     void deleteAccount(Account account);
 
     List<Account> findAccountsByUserId(long id);
-
     void verifyPayment(List<Account> accounts) throws DetailsAccountException;
     void makeTransfer(List<Account> accounts, int optionFrom,long indexOfFirstAccount, String currencyFirstAccount,
                       int numberUserAccounts);
@@ -30,7 +27,6 @@ public interface AccountService {
                                         BigDecimal balanceOfFirstAccount, BigDecimal balanceOfSecondAccount,
                                         Transaction tranIncoming, Transaction tranOutgoing,
                                         Notification notification);
-
     List<AccountDTO> getAccountsByToken(String token) throws WrongTokenException;
-    AccountDTO createAccountByToken(String token, Account account) throws WrongTokenException, BalanceException;
+    AccountDTO createAccountByToken(String token, Account account) throws WrongTokenException;
 }

@@ -1,7 +1,6 @@
 package com.banking.service.impl;
 
 import com.banking.dto.AccountDTO;
-import com.banking.exception.BalanceException;
 import com.banking.exception.DetailsAccountException;
 import com.banking.exception.WrongTokenException;
 import com.banking.model.*;
@@ -81,7 +80,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountDTO createAccountByToken(String token, Account account) throws WrongTokenException, BalanceException {
+    public AccountDTO createAccountByToken(String token, Account account) throws WrongTokenException {
         Authentication authentication = authenticationRepository.findAuthenticationByToken(token);
         if (authentication == null){
             throw new WrongTokenException("Wrong token!");

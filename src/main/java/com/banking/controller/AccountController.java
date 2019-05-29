@@ -1,7 +1,6 @@
 package com.banking.controller;
 
 import com.banking.dto.AccountDTO;
-import com.banking.exception.BalanceException;
 import com.banking.exception.WrongTokenException;
 import com.banking.model.Account;
 import com.banking.service.AccountService;
@@ -37,8 +36,6 @@ public class AccountController {
             return accountService.createAccountByToken(token, account);
         } catch (WrongTokenException ex){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not found!!!", ex);
-        } catch (BalanceException ex) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong balance!", ex);
         }
     }
 }
