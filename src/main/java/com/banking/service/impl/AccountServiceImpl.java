@@ -1,9 +1,12 @@
 package com.banking.service.impl;
 
+import com.banking.dto.AccountDTO;
 import com.banking.exception.BalanceException;
 import com.banking.exception.DetailsAccountException;
+import com.banking.exception.WrongTokenException;
 import com.banking.model.*;
 import com.banking.repository.AccountRepository;
+import com.banking.repository.AuthenticationRepository;
 import com.banking.service.AccountService;
 import com.banking.util.DetailsBankAccount;
 import com.banking.util.IbanGeneratorUtils;
@@ -30,6 +33,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private AuthenticationRepository authenticationRepository;
 
     @Override
     public Account findById(Long id) {
@@ -62,6 +68,22 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public void deleteAccount(Account account) {
         accountRepository.delete(account);
+    }
+
+    @Override
+    public List<AccountDTO> getAccountsByToken(String token) throws WrongTokenException {
+        Authentication authentication = authenticationRepository.findAuthenticationByToken(token);
+        if (authentication == null){
+            throw new WrongTokenException("Wrong token!");
+        }
+        User user = authentication.getUser();
+        List<Account> accountList = accountRepository.findAccountsByUserId(user.getId());
+        List<AccountDTO> accountsDTOList = new ArrayList<>();
+        for(Account account : accountList){
+            accountsDTOList.add(new AccountDTO(account.getAccount_Number(), account.getAccount_Type(), account.getBalance(),
+                    account.getCreatedTime(), account.getUpdatedTime()));
+        }
+        return accountsDTOList;
     }
 
     @Override
@@ -217,6 +239,5 @@ public class AccountServiceImpl implements AccountService {
 
         notificationServiceImpl.createNotification(notification);
     }
-
 
 }

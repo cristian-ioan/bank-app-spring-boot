@@ -1,7 +1,9 @@
 package com.banking.service;
 
+import com.banking.dto.AccountDTO;
 import com.banking.exception.BalanceException;
 import com.banking.exception.DetailsAccountException;
+import com.banking.exception.WrongTokenException;
 import com.banking.model.Account;
 import com.banking.model.Notification;
 import com.banking.model.Transaction;
@@ -21,7 +23,7 @@ public interface AccountService {
 
     List<Account> findAccountsByUserId(long id);
 
-    void createUserBankAccount(User user)  throws BalanceException;
+    void createUserBankAccount(User user) throws BalanceException;
     void verifyPayment(List<Account> accounts) throws DetailsAccountException;
     void makeTransfer(List<Account> accounts, int optionFrom,long indexOfFirstAccount, String currencyFirstAccount,
                       int numberUserAccounts);
@@ -29,4 +31,6 @@ public interface AccountService {
                                         BigDecimal balanceOfFirstAccount, BigDecimal balanceOfSecondAccount,
                                         Transaction tranIncoming, Transaction tranOutgoing,
                                         Notification notification);
+
+    List<AccountDTO> getAccountsByToken(String token) throws WrongTokenException;
 }
