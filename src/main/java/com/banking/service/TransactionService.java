@@ -17,4 +17,6 @@ public interface TransactionService {
     void deleteTransaction(Transaction transaction);
 
     List<TransactionDTO> getTransactionsByToken(String token) throws WrongTokenException;
+
+    TransactionDTO transferMoneyByToken(String token, Transaction transaction) throws WrongTokenException;
 }

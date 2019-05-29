@@ -79,4 +79,9 @@ public class TransactionServiceImpl implements TransactionService {
         }
         return transactionsDTOList;
     }
+
+    @Override
+    public TransactionDTO transferMoneyByToken(String token, Transaction transaction) {
+        return null;
+    }
 }
