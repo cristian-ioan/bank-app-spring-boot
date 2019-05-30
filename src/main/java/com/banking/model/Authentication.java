@@ -1,5 +1,7 @@
 package com.banking.model;
 
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -11,7 +13,8 @@ public class Authentication extends IdModel {
     @Column(name = "token", length = 20)
     private String token;
 
-    @OneToOne(cascade = CascadeType.MERGE)
+    @OneToOne(targetEntity = User.class, cascade = {CascadeType.PERSIST , CascadeType.MERGE , CascadeType.DETACH , CascadeType.REFRESH},
+            fetch = FetchType.EAGER)
     @JoinColumn(name="user_id")
     private User user;
 

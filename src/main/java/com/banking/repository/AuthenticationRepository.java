@@ -1,7 +1,6 @@
 package com.banking.repository;
 
 import com.banking.model.Authentication;
-import com.banking.model.User;
 import org.springframework.stereotype.Repository;
 
 @Repository

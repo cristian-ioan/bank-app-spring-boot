@@ -1,8 +1,5 @@
 package com.banking.util;
 
-import java.nio.charset.Charset;
-import java.util.Random;
-
 public final class TokenGeneratorUtils {
 
     private TokenGeneratorUtils(){};

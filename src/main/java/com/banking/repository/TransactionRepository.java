@@ -4,7 +4,6 @@ import com.banking.model.Account;
 import com.banking.model.Transaction;
 import org.springframework.stereotype.Repository;
 
-import javax.swing.text.TabableView;
 import java.util.List;
 
 @Repository
