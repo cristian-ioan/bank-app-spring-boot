@@ -1,7 +1,7 @@
 package com.banking.scheduler;
 
-import com.banking.model.Authentication;
-import com.banking.repository.AuthenticationRepository;
+import com.banking.model.*;
+import com.banking.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +9,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Properties;
 
-import static com.banking.util.ScheduleUtils.NUMBER_OF_MINUTES_JOB_EXPIRED;
+import static com.banking.util.ScheduleUtils.*;
 
 @Component
 public class ScheduledTasks {
@@ -25,19 +29,32 @@ public class ScheduledTasks {
     @Autowired
     private AuthenticationRepository authenticationRepository;
 
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PersonRepository personRepository;
+
     @Scheduled(fixedRate = 90000)
     public void scheduleTaskWithFixedRate() {
         LOG.info("Task (Delete Token) :: Execution Time - {} ", dateTimeFormatter.format(LocalDateTime.now()) );
-        tokenVerification();
+        deleteTokenAfterExpired();
     }
 
     @Scheduled(cron = "0 * * * * ?")
-    public void scheduleTaskWithCronExpression() {
+    public void scheduleTaskWithCronExpression() throws Exception {
         LOG.info("Cron Task (Send Email):: Execution Time - {}", dateTimeFormatter.format(LocalDateTime.now()));
+        sendEmailNotifications();
     }
 
     @Transactional
-    public void tokenVerification() {
+    public void deleteTokenAfterExpired() {
         List<Authentication> authenticationList = authenticationRepository.findAll();
         LocalDateTime timeJob = LocalDateTime.now();
         for (Authentication authentication : authenticationList){
@@ -47,8 +64,56 @@ public class ScheduledTasks {
             if (diff < NUMBER_OF_MINUTES_JOB_EXPIRED){
                 authenticationRepository.delete(authentication);
                 authenticationRepository.flush();
-                LOG.info("Token deleted! ");
+                LOG.info("Token deleted!");
             }
+        }
+    }
+
+    @Transactional
+    public void sendEmailNotifications() throws Exception {
+        sendEmail("testPenta", "ioan.cristian74@gmail.com", "PentaStagiu");
+        LOG.info("Send email !");
+//        List<Transaction> transactionList = transactionRepository.findAll();
+//        for (Transaction transaction : transactionList){
+//            if (!transaction.getSend()){
+//                User user = transaction.getAccount().getUser();
+//                Notification notification = notificationRepository.findById(user.getId());
+//                String detailsNotification = notification.getDetails();
+//                Person person = personRepository.findPersonById(user.getId());
+//                String email = person.getEmail();
+//                //TODO: send email
+//                transaction.setSend(true);
+//            }
+//        }
+    }
+
+  public void sendEmail(String message, String mailAddress, String subject) {
+
+        //Setting up configurations for the email connection to the Google SMTP server using TLS
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+
+        Session session = Session.getInstance(props,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(USERNAME, PASSWORD);
+                    }
+                });
+
+        try {
+
+            Message mes = new MimeMessage(session);
+            mes.setFrom(new InternetAddress(USERNAME));
+            mes.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mailAddress));
+            mes.setSubject(subject);
+            mes.setText(message);
+            Transport.send(mes);
+        } catch (MessagingException e) {
+            e.printStackTrace();
         }
     }
 

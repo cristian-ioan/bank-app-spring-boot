@@ -28,16 +28,20 @@ public class Transaction extends IdModel {
     @JoinColumn(name="account_id")
     private Account account;
 
+    @Column(name = "is_send", columnDefinition = "boolean default false")
+    private Boolean isSend;
+
     public Transaction(){}
 
     public Transaction(String accountNumber, BigDecimal amount, String detail, LocalDateTime createdTime,
-                       String fieldType, Account account){
+                       String fieldType, Account account, Boolean isSend){
         this.accountNumber= accountNumber;
         this.amount = amount;
         this.detail = detail;
         this.createdTime = createdTime;
         this.fieldType = fieldType;
         this.account = account;
+        this.isSend = isSend;
     }
 
     public String getAccountNumber() {
@@ -88,6 +92,14 @@ public class Transaction extends IdModel {
         this.account = account;
     }
 
+    public Boolean getSend() {
+        return isSend;
+    }
+
+    public void setSend(Boolean send) {
+        isSend = send;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,12 +111,12 @@ public class Transaction extends IdModel {
                 Objects.equals(getDetail(), that.getDetail()) &&
                 Objects.equals(getCreatedTime(), that.getCreatedTime()) &&
                 Objects.equals(getFieldType(), that.getFieldType()) &&
-                Objects.equals(getAccount(), that.getAccount());
+                Objects.equals(getAccount(), that.getAccount()) &&
+                Objects.equals(isSend, that.isSend);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getAccountNumber(), getAmount(), getDetail(), getCreatedTime(), getFieldType(), getAccount());
+        return Objects.hash(getAccountNumber(), getAmount(), getDetail(), getCreatedTime(), getFieldType(), getAccount(), isSend);
     }
-
 }
