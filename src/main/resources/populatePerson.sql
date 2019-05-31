@@ -1,0 +1,4 @@
+INSERT INTO `bank-app`.`person` (`id`, `address`, `email`, `first_name`, `last_name`, `user_id`) VALUES ('1', 'Iasi', 'ioan.cristian74@gmail.com', 'Bogdan', 'Bogdanel', '1');
+INSERT INTO `bank-app`.`person` (`id`, `address`, `email`, `first_name`, `last_name`, `user_id`) VALUES ('2', 'Waslui', 'ioan.cristian74@gmail.com', 'Iosif', 'Iosif', '2');
+INSERT INTO `bank-app`.`person` (`id`, `address`, `email`, `first_name`, `last_name`, `user_id`) VALUES ('3', 'Timisoara', 'ioan.cristian74@gmail.com', 'Ioan', 'Ionica', '3');
+INSERT INTO `bank-app`.`person` (`id`, `address`, `email`, `first_name`, `last_name`, `user_id`) VALUES ('4', 'Iasi', 'ioan.cristian74@gmail.com', 'Alex', 'Alexandru', '4');

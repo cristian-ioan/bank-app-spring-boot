@@ -30,9 +30,6 @@ public class ScheduledTasks {
     private AuthenticationRepository authenticationRepository;
 
     @Autowired
-    private TransactionRepository transactionRepository;
-
-    @Autowired
     private NotificationRepository notificationRepository;
 
     @Autowired
@@ -70,21 +67,22 @@ public class ScheduledTasks {
     }
 
     @Transactional
-    public void sendEmailNotifications() throws Exception {
-        sendEmail("testPenta", "ioan.cristian74@gmail.com", "PentaStagiu");
-        LOG.info("Send email !");
-//        List<Transaction> transactionList = transactionRepository.findAll();
-//        for (Transaction transaction : transactionList){
-//            if (!transaction.getSend()){
-//                User user = transaction.getAccount().getUser();
-//                Notification notification = notificationRepository.findById(user.getId());
-//                String detailsNotification = notification.getDetails();
-//                Person person = personRepository.findPersonById(user.getId());
-//                String email = person.getEmail();
-//                //TODO: send email
-//                transaction.setSend(true);
-//            }
-//        }
+    public void sendEmailNotifications() {
+        List<Notification> notificationList = notificationRepository.findAll();
+        for (Notification notification : notificationList){
+            if (!notification.getSend()){
+                User user = notification.getUser();
+                String detailsNotification = notification.getDetails();
+                Person person = personRepository.findPersonById(user.getId());
+                String userEmail = person.getEmail();
+                String subjectEmail = "Notification about transaction made on date: " + notification.getCreatedTime();
+                notification.setSend(true);
+                notificationRepository.save(notification);
+                notificationRepository.flush();
+                sendEmail(detailsNotification, userEmail, subjectEmail);
+                LOG.info("Send email !");
+            }
+        }
     }
 
   public void sendEmail(String message, String mailAddress, String subject) {

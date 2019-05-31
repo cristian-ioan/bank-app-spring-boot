@@ -21,13 +21,18 @@ public class Notification extends IdModel {
     @Column(name = "sent_time", length = 8)
     private LocalDateTime sentTime;
 
+    @Column(name = "is_send", columnDefinition = "boolean default false")
+    private Boolean isSend;
+
     public Notification(){}
 
-    public Notification(User user, String details, LocalDateTime createdTime, LocalDateTime sentTime){
+    public Notification(User user, String details, LocalDateTime createdTime, LocalDateTime sentTime,
+                        Boolean isSend){
         this.user = user;
         this.details = details;
         this.createdTime = createdTime;
         this.sentTime = sentTime;
+        this.isSend = isSend;
     }
 
     public User getUser() {
@@ -62,6 +67,14 @@ public class Notification extends IdModel {
         this.sentTime = sentTime;
     }
 
+    public Boolean getSend() {
+        return isSend;
+    }
+
+    public void setSend(Boolean send) {
+        isSend = send;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -71,12 +84,12 @@ public class Notification extends IdModel {
         return Objects.equals(getUser(), that.getUser()) &&
                 Objects.equals(getDetails(), that.getDetails()) &&
                 Objects.equals(getCreatedTime(), that.getCreatedTime()) &&
-                Objects.equals(getSentTime(), that.getSentTime());
+                Objects.equals(getSentTime(), that.getSentTime()) &&
+                Objects.equals(isSend, that.isSend);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUser(), getDetails(), getCreatedTime(), getSentTime());
+        return Objects.hash(getUser(), getDetails(), getCreatedTime(), getSentTime(), isSend);
     }
-
 }

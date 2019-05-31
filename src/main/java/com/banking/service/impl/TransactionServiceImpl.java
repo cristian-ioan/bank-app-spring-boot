@@ -103,7 +103,6 @@ public class TransactionServiceImpl implements TransactionService {
                 transaction.setCreatedTime(createdTime);
                 transaction.setFieldType("OUTGOING");
                 transaction.setAccount(account);
-                transaction.setSend(false);
                 transactionRepository.save(transaction);
                 accountRepository.save(account);
                 transactionsDTOList.add(new TransactionDTO(transaction.getAccountNumber(),
