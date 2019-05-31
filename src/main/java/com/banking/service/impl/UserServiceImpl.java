@@ -1,5 +1,7 @@
 package com.banking.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.banking.dto.UserDTO;
 import com.banking.exception.WrongTokenException;
 import com.banking.exception.WrongUserNamePasswordException;
@@ -23,6 +25,8 @@ import java.util.Optional;
 @Service("userService")
 @Transactional(readOnly = true, rollbackFor = Exception.class)
 public class UserServiceImpl implements UserService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -109,15 +113,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public String logoutUser(String token) throws WrongTokenException {
-        Authentication getAuthenticationByToken = authenticationRepository.findAuthenticationByToken(token);
-        if (getAuthenticationByToken != null){
-            authenticationRepository.delete(getAuthenticationByToken);
-            authenticationRepository.flush();
-            throw new ResponseStatusException(HttpStatus.OK, "Token deleted!");
-        } else {
-            throw new WrongTokenException("Wrong token!");
+    public void logoutUser(String token) throws WrongTokenException {
+        List<Authentication> authenticationList = authenticationRepository.findAll();
+        for(Authentication authentication : authenticationList){
+            if (authentication.getToken().equals(token)){
+                authenticationRepository.delete(authentication);
+                authenticationRepository.flush();
+                throw new ResponseStatusException(HttpStatus.OK, "Token deleted!");
+            }
         }
+        throw new WrongTokenException("Wrong token!");
     }
 
 }

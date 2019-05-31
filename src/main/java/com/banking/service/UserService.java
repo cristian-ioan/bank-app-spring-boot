@@ -20,7 +20,7 @@ public interface UserService {
 
     List<UserDTO> convertToUsersListDTO();
     String loginUser(String username, String password) throws WrongUserNamePasswordException;
-    String logoutUser(String token) throws WrongTokenException;
+    void logoutUser(String token) throws WrongTokenException;
     User findUserByUserNameAndPassword(String username, String password);
     Optional<User> verifyUserPassword(String username, String password);
 }

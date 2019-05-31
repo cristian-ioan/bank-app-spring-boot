@@ -48,9 +48,9 @@ public class UserController {
 
     @DeleteMapping("/logout/{token}")
     @ResponseBody
-    public String logoutUser(@PathVariable("token") String token){
+    public void logoutUser(@PathVariable("token") String token){
         try {
-            return userService.logoutUser(token);
+            userService.logoutUser(token);
         } catch (WrongTokenException ex){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Token not found!!!", ex);
         }

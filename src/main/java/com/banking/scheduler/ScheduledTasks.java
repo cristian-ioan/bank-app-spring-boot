@@ -33,21 +33,18 @@ public class ScheduledTasks {
     private NotificationRepository notificationRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private PersonRepository personRepository;
 
     @Scheduled(fixedRate = 90000)
     public void scheduleTaskWithFixedRate() {
         LOG.info("Task (Delete Token) :: Execution Time - {} ", dateTimeFormatter.format(LocalDateTime.now()) );
-        deleteTokenAfterExpired();
+//        deleteTokenAfterExpired();
     }
 
     @Scheduled(cron = "0 * * * * ?")
-    public void scheduleTaskWithCronExpression() throws Exception {
+    public void scheduleTaskWithCronExpression() {
         LOG.info("Cron Task (Send Email):: Execution Time - {}", dateTimeFormatter.format(LocalDateTime.now()));
-        sendEmailNotifications();
+//        sendEmailNotifications();
     }
 
     @Transactional
