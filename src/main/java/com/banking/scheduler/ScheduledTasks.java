@@ -38,13 +38,13 @@ public class ScheduledTasks {
     @Scheduled(fixedRate = 90000)
     public void scheduleTaskWithFixedRate() {
         LOG.info("Task (Delete Token) :: Execution Time - {} ", dateTimeFormatter.format(LocalDateTime.now()) );
-//        deleteTokenAfterExpired();
+        deleteTokenAfterExpired();
     }
 
     @Scheduled(cron = "0 * * * * ?")
     public void scheduleTaskWithCronExpression() {
         LOG.info("Cron Task (Send Email):: Execution Time - {}", dateTimeFormatter.format(LocalDateTime.now()));
-//        sendEmailNotifications();
+        sendEmailNotifications();
     }
 
     @Transactional
