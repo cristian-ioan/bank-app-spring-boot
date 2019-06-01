@@ -35,7 +35,7 @@ public class ScheduledTasks {
     @Autowired
     private PersonRepository personRepository;
 
-    @Scheduled(fixedRate = 90000)
+    @Scheduled(fixedRate = NUMBER_OF_SECONDS_FOR_DELETE_TOKEN)
     public void scheduleTaskWithFixedRate() {
         LOG.info("Task (Delete Token) :: Execution Time - {} ", dateTimeFormatter.format(LocalDateTime.now()) );
         deleteTokenAfterExpired();
@@ -54,7 +54,7 @@ public class ScheduledTasks {
         for (Authentication authentication : authenticationList){
             LocalDateTime tokenCreatedTime = authentication.getCreationTime();
             Duration duration = Duration.between(timeJob, tokenCreatedTime);
-            long diff = Math.abs(duration.toMinutes());
+            int diff = Math.toIntExact(duration.toMinutes());
             if (diff < NUMBER_OF_MINUTES_JOB_EXPIRED){
                 authenticationRepository.delete(authentication);
                 authenticationRepository.flush();
