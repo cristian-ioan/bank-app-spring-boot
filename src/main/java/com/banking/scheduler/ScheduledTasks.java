@@ -50,12 +50,11 @@ public class ScheduledTasks {
     @Transactional
     public void deleteTokenAfterExpired() {
         List<Authentication> authenticationList = authenticationRepository.findAll();
-        LocalDateTime timeJob = LocalDateTime.now();
+        LocalDateTime jobTime = LocalDateTime.now();
         for (Authentication authentication : authenticationList){
-            LocalDateTime tokenCreatedTime = authentication.getCreationTime();
-            Duration duration = Duration.between(timeJob, tokenCreatedTime);
-            int diff = Math.toIntExact(duration.toMinutes());
-            if (diff < NUMBER_OF_MINUTES_JOB_EXPIRED){
+            LocalDateTime authenticationCreationTime = authentication.getCreationTime();
+            int difference = jobTime.getMinute() - authenticationCreationTime.getMinute();
+            if (difference > NUMBER_OF_MINUTES_JOB_EXPIRED){
                 authenticationRepository.delete(authentication);
                 authenticationRepository.flush();
                 LOG.info("Token deleted!");
