@@ -1,6 +1,7 @@
 package com.banking.service;
 
 import com.banking.dto.TransactionDTO;
+import com.banking.dto.TransferDTO;
 import com.banking.exception.WrongTokenException;
 import com.banking.model.Transaction;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,5 @@ public interface TransactionService {
 
     List<TransactionDTO> getTransactionsByToken(String token) throws WrongTokenException;
 
-    List<TransactionDTO> transferMoneyByToken(String token, BigDecimal amount, String fromAccount, String toAccount,
-                                        Transaction transaction) throws WrongTokenException;
+    List<TransactionDTO> transferMoneyByToken(TransferDTO transferDTO) throws WrongTokenException;
 }

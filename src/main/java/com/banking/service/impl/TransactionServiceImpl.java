@@ -1,13 +1,12 @@
 package com.banking.service.impl;
 
 import com.banking.dto.TransactionDTO;
+import com.banking.dto.TransferDTO;
 import com.banking.exception.WrongTokenException;
-import com.banking.model.Account;
-import com.banking.model.Authentication;
-import com.banking.model.Transaction;
-import com.banking.model.User;
+import com.banking.model.*;
 import com.banking.repository.AccountRepository;
 import com.banking.repository.AuthenticationRepository;
+import com.banking.repository.NotificationRepository;
 import com.banking.repository.TransactionRepository;
 import com.banking.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service("transactionService")
-@Transactional(readOnly = true, rollbackFor = Exception.class)
+@Transactional(rollbackFor = Exception.class)
 public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
@@ -31,6 +30,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Override
     public Transaction findById(Long id) {
@@ -83,50 +85,47 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionDTO> transferMoneyByToken(String token, BigDecimal amount, String fromAccount,
-                                               String toAccount, Transaction transaction) throws WrongTokenException {
+    public List<TransactionDTO> transferMoneyByToken(TransferDTO transferDTO) throws WrongTokenException {
+        String token = transferDTO.getToken();
         Authentication authentication = authenticationRepository.findAuthenticationByToken(token);
-
         if (authentication == null){
             throw new WrongTokenException("Wrong token!");
         }
-        User user = authentication.getUser();
-        List<Account> accountList = accountRepository.findAccountsByUserId(user.getId());
         List<TransactionDTO> transactionsDTOList = new ArrayList<>();
-        for(Account account : accountList){
-            if (account.getAccount_Number().equals(fromAccount)){
-                LocalDateTime createdTime = LocalDateTime.now();
-                BigDecimal newBalanceOfFirstAccount = account.getBalance().subtract(amount);
-                account.setBalance(newBalanceOfFirstAccount);
-                transaction.setAccountNumber(fromAccount);
-                transaction.setAmount(amount);
-                transaction.setCreatedTime(createdTime);
-                transaction.setFieldType("OUTGOING");
-                transaction.setAccount(account);
-                transactionRepository.save(transaction);
-                accountRepository.save(account);
-                transactionsDTOList.add(new TransactionDTO(transaction.getAccountNumber(),
-                        transaction.getAmount(), transaction.getDetail(), transaction.getCreatedTime(),
-                        transaction.getFieldType()));
-            }
-        }
-//        for(Account account : accountList){
-//            if (account.getAccount_Number().equals(toAccount)){
-//                LocalDateTime createdTime = LocalDateTime.now();
-//                BigDecimal newBalanceOfSecondAccount = account.getBalance().add(amount);
-//                account.setBalance(newBalanceOfSecondAccount);
-//                transaction.setAccountNumber(toAccount);
-//                transaction.setAmount(amount);
-//                transaction.setCreatedTime(createdTime);
-//                transaction.setFieldType("INCOMING");
-//                transaction.setAccount(account);
-//                transactionRepository.save(transaction);
-//                accountRepository.save(account);
-//                transactionsDTOList.add(new TransactionDTO(transaction.getAccountNumber(),
-//                        transaction.getAmount(), transaction.getDetail(), transaction.getCreatedTime(),
-//                        transaction.getFieldType()));
-//            }
-//        }
+        AccountServiceImpl accountServiceImpl = new AccountServiceImpl();
+        User user = authentication.getUser();
+        LocalDateTime createdTime = LocalDateTime.now();
+        List<Account> accountList = accountRepository.findAccountsByUserId(user.getId());
+        Account accountFrom = accountServiceImpl.findAccountNumber(accountList, transferDTO.getFromAccount()).get();
+        BigDecimal newBalanceOfFirstAccount = accountFrom.getBalance().subtract(transferDTO.getAmount());
+        accountFrom.setBalance(newBalanceOfFirstAccount);
+        Transaction transactionFrom = new Transaction(transferDTO.getFromAccount(), transferDTO.getAmount(),
+                        transferDTO.getDetails(), createdTime, "OUTGOING",accountFrom);
+        transactionRepository.save(transactionFrom);
+        accountRepository.save(accountFrom);
+
+        Account accountTo = accountServiceImpl.findAccountNumber(accountList, transferDTO.getToAccount()).get();
+        BigDecimal newBalanceOfSecondAccount = accountTo.getBalance().add(transferDTO.getAmount());
+        accountTo.setBalance(newBalanceOfSecondAccount);
+        Transaction transactionTo = new Transaction(transferDTO.getToAccount(), transferDTO.getAmount(),
+                transferDTO.getDetails(), createdTime, "INCOMING",accountTo);
+        transactionRepository.save(transactionTo);
+        accountRepository.save(accountTo);
+
+        transactionsDTOList.add(new TransactionDTO(transactionFrom.getAccountNumber(),
+                        transactionFrom.getAmount(), transactionFrom.getDetail(), transactionFrom.getCreatedTime(),
+                        transactionFrom.getFieldType()));
+        transactionsDTOList.add(new TransactionDTO(transactionTo.getAccountNumber(),
+                        transactionTo.getAmount(), transactionTo.getDetail(), transactionTo.getCreatedTime(),
+                        transactionTo.getFieldType()));
+
+        LocalDateTime sentTime = LocalDateTime.now();
+        String detailsNotification = "From: ".concat(accountFrom.getAccount_Number()).
+                concat(" To: ").concat(accountTo.getAccount_Number()).concat(" amount: ").
+                concat(String.valueOf(transferDTO.getAmount())).concat(" -> ").concat(transferDTO.getDetails());
+        Notification notification = new Notification(user, detailsNotification, createdTime, sentTime, false);
+        notificationRepository.save(notification);
+
         return transactionsDTOList;
     }
 

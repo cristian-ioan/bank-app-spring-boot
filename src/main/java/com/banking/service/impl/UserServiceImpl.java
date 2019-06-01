@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service("userService")
-@Transactional(readOnly = true, rollbackFor = Exception.class)
+@Transactional(rollbackFor = Exception.class)
 public class UserServiceImpl implements UserService {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -114,13 +114,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void logoutUser(String token) throws WrongTokenException {
-        List<Authentication> authenticationList = authenticationRepository.findAll();
-        for(Authentication authentication : authenticationList){
-            if (authentication.getToken().equals(token)){
-                authenticationRepository.delete(authentication);
-                authenticationRepository.flush();
-                throw new ResponseStatusException(HttpStatus.OK, "Token deleted!");
-            }
+        Authentication authentication = authenticationRepository.findByToken(token);
+        if (authentication != null){
+            authenticationRepository.delete(authentication);
+            authenticationRepository.flush();
+            throw new ResponseStatusException(HttpStatus.OK, "Token deleted!");
         }
         throw new WrongTokenException("Wrong token!");
     }

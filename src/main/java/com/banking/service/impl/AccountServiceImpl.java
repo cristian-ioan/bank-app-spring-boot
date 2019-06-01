@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service("accountService")
-@Transactional(readOnly = true, rollbackFor = Exception.class)
+@Transactional(rollbackFor = Exception.class)
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
@@ -76,10 +78,23 @@ public class AccountServiceImpl implements AccountService {
         }
         User user = authentication.getUser();
         account.setUser(user);
+        LocalDateTime time = LocalDateTime.now();
+        account.setCreatedTime(time);
+        account.setUpdatedTime(time);
         accountRepository.save(account);
         AccountDTO accountDTO = new AccountDTO(account.getAccount_Number(), account.getAccount_Type(),
                 account.getBalance(), account.getCreatedTime(), account.getUpdatedTime());
         return accountDTO;
+    }
+
+    @Override
+    public Optional<Account> findAccountNumber(List<Account> accountList, String accountNumber) {
+        for (Account account : accountList){
+            if (account.getAccount_Number().equals(accountNumber)){
+                return Optional.of(account);
+            }
+        }
+        return Optional.empty();
     }
 
 }
