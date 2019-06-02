@@ -1,72 +1,104 @@
 import com.banking.config.AppConfig;
-import com.banking.exception.WrongTokenException;
-import com.banking.exception.WrongUserNamePasswordException;
+import com.banking.model.Authentication;
 import com.banking.model.User;
+import com.banking.repository.AuthenticationRepository;
+import com.banking.repository.UserRepository;
+import com.banking.service.impl.AuthenticationServiceImpl;
 import com.banking.service.impl.UserServiceImpl;
 import com.banking.util.TokenGeneratorUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.exceptions.misusing.InvalidUseOfMatchersException;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration(classes = AppConfig.class)
 @Transactional
 public class UserServiceImplTest {
 
-    @Mock
+    @InjectMocks
     private UserServiceImpl userServiceImpl;
 
-    @Test(expected= InvalidUseOfMatchersException.class)
-    public void createUserTest(){
-        //create mock
-        LocalDateTime time = LocalDateTime.now();
-        User user = new User("alex", "alex", time, time);
-        userServiceImpl = Mockito.mock(UserServiceImpl.class);
+    @InjectMocks
+    private AuthenticationServiceImpl authenticationServiceImpl;
 
-        //define return object for method createUser
-        Mockito.when(userServiceImpl.createUser(new User(anyString(), anyString(), any(), any()))).thenReturn(user);
+    @Mock
+    private UserRepository userRepository;
 
-        //use mock in test
-        Assert.assertEquals(userServiceImpl.createUser(new User(anyString(), anyString(), any(), any())), user);
-        Assert.assertEquals(userServiceImpl.createUser(new User("A", "B", LocalDateTime.now(),
-                LocalDateTime.now())), user);
+    @Mock
+    private AuthenticationRepository authenticationRepository;
+
+    @Test
+    public void findAllUsersTest(){
+        List<User> userList = new ArrayList<>();
+        User userOne = new User("alex", "alex", LocalDateTime.now(), LocalDateTime.now());
+        User userTwo = new User("bogdan", "bogdan", LocalDateTime.now(), LocalDateTime.now());
+        User userThree = new User("andrei", "andrei", LocalDateTime.now(), LocalDateTime.now());
+
+        userList.add(userOne);
+        userList.add(userTwo);
+        userList.add(userThree);
+
+        Mockito.when(userRepository.findAll()).thenReturn(userList);
+
+        List<User> users = userServiceImpl.findAll();
+
+        Assert.assertEquals(3, users.size());
+        Mockito.verify(userRepository, times(1)).findAll();
+
     }
 
     @Test
-    public void loginUserTest() throws WrongUserNamePasswordException {
-        String generateToken = TokenGeneratorUtils.generateToken();
-        userServiceImpl = Mockito.mock(UserServiceImpl.class);
+    public void getUserById(){
+        Mockito.when(userRepository.findById(1L)).thenReturn(new User("Gupta","Lokesh",
+                LocalDateTime.now(),LocalDateTime.now()));
 
-        Mockito.when(userServiceImpl.loginUser(anyString(), anyString())).thenReturn(generateToken);
+        User user = userServiceImpl.findById(1L);
 
-        Assert.assertEquals(userServiceImpl.loginUser(anyString(), anyString()), generateToken);
-        Assert.assertEquals(userServiceImpl.loginUser("alex", "alex"), generateToken);
+        Assert.assertEquals("Gupta", user.getUserName());
+        Assert.assertEquals("Lokesh", user.getPassword());
+        Mockito.verify(userRepository, times(1)).findById(1L);
     }
 
-    @Test(expected= IllegalArgumentException.class)
-    public void logoutUserTest() throws WrongTokenException {
-        userServiceImpl = Mockito.mock(UserServiceImpl.class);
+    @Test
+    public void createUserTest(){
+        User user = new User("alex", "alex", LocalDateTime.now(), LocalDateTime.now());
 
-        Mockito.doThrow(new IllegalArgumentException()).when(userServiceImpl).logoutUser(anyString());
-        userServiceImpl.logoutUser("alexandru");
-        Mockito.doThrow(new IllegalArgumentException()).when(userServiceImpl).logoutUser("alexandru");
-        try {
-            userServiceImpl.logoutUser("alexandru");
-            Assert.fail();
-        } catch (IllegalArgumentException e) {
-            e.getMessage();
-        }
+        userServiceImpl.createUser(user);
+
+        Mockito.verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    public void loginUserTest() {
+        User user = userRepository.findUserByUserNameAndPassword("alex", "alex");
+        String generateToken = TokenGeneratorUtils.generateToken();
+        Authentication authentication = new Authentication(generateToken, user, LocalDateTime.now());
+
+        authenticationServiceImpl.createAuthentication(authentication);
+
+        Mockito.verify(authenticationRepository, times(1)).save(authentication);
+    }
+
+    @Test
+    public void logoutUserTest() {
+        String generateToken = TokenGeneratorUtils.generateToken();
+        Authentication authentication = authenticationRepository.findAuthenticationByToken(generateToken);
+
+        authenticationServiceImpl.deleteAuthentication(authentication);
+
+        Mockito.verify(authenticationRepository, times(1)).delete(authentication);
 
     }
 
